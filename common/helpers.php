@@ -1,6 +1,8 @@
 <?php
 
 use TelegramGithubNotify\App\Helpers\ConfigHelper;
+use TelegramGithubNotify\App\Helpers\EventHelper;
+use TelegramGithubNotify\App\Helpers\SettingHelper;
 
 if (!function_exists('config')) {
     /**
@@ -51,7 +53,6 @@ if (!function_exists('singularity')) {
      */
     function singularity($word): bool|string
     {
-        $singular = $word;
         $singular_rules = [
             '/(quiz)zes$/i' => '$1',
             '/(matr)ices$/i' => '$1ix',
@@ -78,14 +79,30 @@ if (!function_exists('singularity')) {
             '/(n)ews$/i' => '$1ews',
             '/(.)s$/i' => '$1'
         ];
+        return preg_replace(array_keys($singular_rules), array_values($singular_rules), $word);
+    }
+}
 
-        foreach ($singular_rules as $rule => $replacement) {
-            if (preg_match($rule, $word)) {
-                $singular = preg_replace($rule, $replacement, $word);
-                break;
-            }
-        }
+if (!function_exists('event_config')) {
+    /**
+     * Return event config
+     *
+     * @return array
+     */
+    function event_config(): array
+    {
+        return (new EventHelper())->getEventConfig();
+    }
+}
 
-        return $singular;
+if (!function_exists('enable_all_events')) {
+    /**
+     * Return enable all events
+     *
+     * @return bool
+     */
+    function enable_all_events(): bool
+    {
+        return (new SettingHelper())->enableAllEvents();
     }
 }

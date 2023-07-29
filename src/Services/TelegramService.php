@@ -2,55 +2,16 @@
 
 namespace TelegramGithubNotify\App\Services;
 
-use Telegram;
-
-class TelegramService
+class TelegramService extends AppService
 {
-    public string $token;
-
-    public string $chatId;
-
-    public Telegram $telegram;
-
     public array $messageData;
+
+    public SettingService $settingService;
 
     public function __construct()
     {
-        $this->setToken();
-        $this->setChatId();
-        $this->storeByToken();
-        $this->getDataOfMessage();
-    }
+        parent::__construct();
 
-    /**
-     * @return void
-     */
-    private function setToken(): void
-    {
-        $this->token = config('telegram-bot.token');
-    }
-
-    /**
-     * @return void
-     */
-    private function setChatId(): void
-    {
-        $this->chatId = config('telegram-bot.chat_id');
-    }
-
-    /**
-     * @return void
-     */
-    private function storeByToken(): void
-    {
-        $this->telegram = new Telegram($this->token);
-    }
-
-    /**
-     * @return void
-     */
-    private function getDataOfMessage(): void
-    {
         $this->messageData = $this->telegram->getData() ?? [];
     }
 
@@ -64,92 +25,23 @@ class TelegramService
     {
         switch ($text) {
             case '/start':
-                $reply = view('tools.start', [
-                    'first_name' => $this->telegram->FirstName()
-                ]);
-                $content = array(
-                    'chat_id' => $this->chatId,
-                    'photo' => curl_file_create('public/images/github.jpeg', 'image/png'),
-                    'caption' => $reply,
-                    'disable_web_page_preview' => true,
-                    'parse_mode' => 'HTML'
-                );
-                $this->telegram->sendPhoto($content);
-
+                $reply = view('tools.start', ['first_name' => $this->telegram->FirstName()]);
+                $this->sendMessage($reply, ['photo' => curl_file_create(config('app.image'), 'image/png')], 'Photo');
                 break;
             case '/help':
-                $option = [
-                    [
-                        $this->telegram->buildInlineKeyBoardButton("📰 About", "", "about", ""),
-                        $this->telegram->buildInlineKeyBoardButton("📞 Contact", "https://t.me/tannp27")
-                    ],
-                    [
-                        $this->telegram->buildInlineKeyBoardButton(
-                            "💠 Source Code",
-                            "https://github.com/lbiltech/telegram-bot-github-notify"
-                        ),
-                    ]
-                ];
-                $reply = view('tools.help');
-                $content = array(
-                    'chat_id' => $this->chatId,
-                    'reply_markup' => $this->telegram->buildInlineKeyBoard($option),
-                    'text' => $reply,
-                    'disable_web_page_preview' => true,
-                    'parse_mode' => 'HTML'
-                );
-                $this->telegram->sendMessage($content);
-
-                break;
-            case '/id':
-                $reply = "Your id is <code>{$this->chatId}</code>";
-                $content = array(
-                    'chat_id' => $this->chatId,
-                    'text' => $reply,
-                    'disable_web_page_preview' => true,
-                    'parse_mode' => 'HTML'
-                );
-                $this->telegram->sendMessage($content);
-
-                break;
-            case '/server':
-                $reply = view('tools.server');
-                $content = array(
-                    'chat_id' => $this->chatId,
-                    'text' => $reply,
-                    'disable_web_page_preview' => true,
-                    'parse_mode' => 'HTML'
-                );
-                $this->telegram->sendMessage($content);
-
+                $this->sendMessage(view('tools.help'), ['reply_markup' => $this->helpMarkup()]);
                 break;
             case '/token':
-                $reply = "This bot token is: <code>{$this->token}</code>";
-                $content = array(
-                    'chat_id' => $this->chatId,
-                    'text' => $reply,
-                    'disable_web_page_preview' => true,
-                    'parse_mode' => 'HTML'
-                );
-                $this->telegram->sendMessage($content);
-
-                break;
+            case '/id':
             case '/usage':
-                $reply = view('tools.usage');
-                $content = array(
-                    'chat_id' => $this->chatId,
-                    'text' => $reply,
-                    'disable_web_page_preview' => true,
-                    'parse_mode' => 'HTML'
-                );
-                $this->telegram->sendMessage($content);
-
+            case '/server':
+                $this->sendMessage(view('tools.' . trim($text, '/')));
+                break;
+            case '/settings':
+                $this->settingService->settingMarkup($this->telegram);
                 break;
             default:
-                $reply = "🤨 Invalid Request";
-                $content = array('chat_id' => $this->chatId, 'text' => $reply);
-
-                $this->telegram->sendMessage($content);
+                $this->sendMessage('🤨 Invalid Request!');
         }
     }
 
@@ -182,10 +74,23 @@ class TelegramService
         if (!is_null($this->telegram->Callback_ChatID())) {
             $callback = $this->telegram->Callback_Data();
             $this->sendCallbackResponse($callback);
-
             return true;
         }
-
         return false;
+    }
+
+    /**
+     * @return array[]
+     */
+    public function helpMarkup(): array
+    {
+        return [
+            [
+                $this->telegram->buildInlineKeyBoardButton("📰 About", "", "about", ""),
+                $this->telegram->buildInlineKeyBoardButton("📞 Contact", config('author.contact'))
+            ], [
+                $this->telegram->buildInlineKeyBoardButton("💠 Source Code", config('author.source_code'))
+            ]
+        ];
     }
 }

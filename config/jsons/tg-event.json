@@ -1,0 +1,114 @@
+{
+  "branch_protection_rule": {
+    "created": true,
+    "edited": false,
+    "deleted": false
+  },
+  "package": {
+    "published": true,
+    "updated": false
+  },
+  "ping": true,
+  "project": {
+    "created": true,
+    "closed": true,
+    "reopened": false,
+    "edited": false,
+    "deleted": false
+  },
+  "push": true,
+  "fork": true,
+  "gollum": true,
+  "pull_request": {
+    "closed": true,
+    "opened": true,
+    "reopened": false,
+    "review_request_removed": false,
+    "review_requested": false,
+    "synchronize": false,
+    "unlabeled": false,
+    "labeled": false,
+    "edited": false,
+    "assigned": false,
+    "unassigned": false,
+    "review_request": true
+  },
+  "pull_request_review": {
+    "submitted": true,
+    "edited": false,
+    "dismissed": false
+  },
+  "pull_request_review_comment": {
+    "created": true,
+    "edited": false,
+    "deleted": false
+  },
+  "pull_request_review_thread": {
+    "resolved": false,
+    "unresolved": false
+  },
+  "issue": {
+    "closed": true,
+    "opened": true,
+    "reopened": false,
+    "edited": false,
+    "assigned": true,
+    "unassigned": false,
+    "labeled": false,
+    "unlabeled": false,
+    "milestoned": false,
+    "demilestoned": false,
+    "locked": false,
+    "unlocked": false,
+    "transferred": false,
+    "pinned": true,
+    "unpinned": false,
+    "deleted": true
+  },
+  "issue_comment": {
+    "created": true,
+    "edited": false,
+    "deleted": false
+  },
+  "release": {
+    "published": true,
+    "unpublished": false,
+    "created": false,
+    "edited": false,
+    "deleted": false,
+    "prereleased": false,
+    "released": true
+  },
+  "secret_scanning_alert": {
+    "created": true,
+    "reopened": false,
+    "resolved": false
+  },
+  "star": {
+    "created": true,
+    "deleted": false
+  },
+  "watch": {
+    "started": true
+  },
+  "member": {
+    "added": true,
+    "edited": false,
+    "removed": false
+  },
+  "check_run": {
+    "created": false,
+    "rerequested": false,
+    "completed": true
+  },
+  "workflow_dispatch": false,
+  "workflow_job": {
+    "queued": false,
+    "in_progress": false,
+    "completed": false
+  },
+  "workflow_run": {
+    "completed": true,
+    "requested": true
+  }
+}
