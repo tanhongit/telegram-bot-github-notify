@@ -56,13 +56,18 @@ class EventService extends AppService
     }
 
     /**
+     * Create markup for select event
+     *
+     * @param string|null $event
      * @return array
      */
-    public function eventMarkup(): array
+    public function eventMarkup(?string $event = null): array
     {
         $replyMarkup = $replyMarkupItem = [];
 
-        foreach ($this->event->getEventConfig() as $event => $eventValue) {
+        $events = $event === null ? $this->event->eventConfig : $this->event->eventConfig[$event];
+
+        foreach ($events as $event => $value) {
             if (count($replyMarkupItem) === self::LINE_ITEM_COUNT) {
                 $replyMarkup[] = $replyMarkupItem;
                 $replyMarkupItem = [];
@@ -70,10 +75,10 @@ class EventService extends AppService
 
             $callbackData = $this->event::EVENT_PREFIX . $event;
 
-            if (is_array($eventValue)) {
+            if (is_array($value)) {
                 $eventName = '⚙ ' . $event;
                 $callbackData .= '.child';
-            } elseif ($eventValue) {
+            } elseif ($value) {
                 $eventName = '✅ ' . $event;
             } else {
                 $eventName = '❌ ' . $event;
@@ -87,6 +92,9 @@ class EventService extends AppService
             $replyMarkup[] = $replyMarkupItem;
         }
 
+        $replyMarkup[] = [$this->telegram->buildInlineKeyBoardButton('🔙 Back', '', 'back')];
+        $replyMarkup[] = [$this->telegram->buildInlineKeyBoardButton('📚 Menu', '', $this->setting::SETTING_PREFIX . '.back.menu')];
+
         return $replyMarkup;
     }
 
@@ -95,7 +103,7 @@ class EventService extends AppService
      */
     public function eventHandle(): void
     {
-        $this->sendMessage(
+        $this->editMessageText(
             view('tools.event'),
             ['reply_markup' => $this->eventMarkup()]
         );
