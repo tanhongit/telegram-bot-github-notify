@@ -30,4 +30,4 @@ jobs:
             git reset --hard HEAD
             git clean -fd
             git pull origin deploy
-            composer update
+            docker-compose run --rm server bash -c "composer update"
