@@ -2,31 +2,21 @@
 
 namespace LbilTech\TelegramGitNotifierApp\Http\Actions;
 
+use LbilTech\TelegramGitNotifier\Bot;
 use LbilTech\TelegramGitNotifier\Exceptions\EntryNotFoundException;
 use LbilTech\TelegramGitNotifier\Exceptions\MessageIsEmptyException;
-use LbilTech\TelegramGitNotifier\Models\Setting;
-use LbilTech\TelegramGitNotifier\Services\TelegramService;
-use LbilTech\TelegramGitNotifierApp\Services\AppService;
 use LbilTech\TelegramGitNotifierApp\Services\CommandService;
 
 class CommandAction
 {
-    protected AppService $appService;
+    protected Bot $bot;
 
     protected CommandService $commandService;
 
-    protected TelegramService $telegramService;
-
-    protected Setting $setting;
-
     public function __construct(
-        AppService $appService,
-        TelegramService $telegramService,
-        Setting $setting
+        Bot $bot,
     ) {
-        $this->appService = $appService;
-        $this->setting = $setting;
-        $this->telegramService = $telegramService;
+        $this->bot = $bot;
         $this->commandService = new CommandService();
     }
 
@@ -37,32 +27,32 @@ class CommandAction
      */
     public function __invoke(): void
     {
-        $text = $this->appService->telegram->Text();
+        $text = $this->bot->telegram->Text();
 
         switch ($text) {
             case '/start':
-                $this->commandService->sendStartMessage($this->appService);
+                $this->commandService->sendStartMessage($this->bot);
                 break;
             case '/menu':
-                $this->appService->sendMessage(
+                $this->bot->sendMessage(
                     view('tools.menu'),
-                    ['reply_markup' => $this->commandService->menuMarkup($this->appService->telegram)]
+                    ['reply_markup' => $this->commandService->menuMarkup($this->bot->telegram)]
                 );
                 break;
             case '/token':
             case '/id':
             case '/usage':
             case '/server':
-                $this->appService->sendMessage(view('tools.' . trim($text, '/')));
+                $this->bot->sendMessage(view('tools.' . trim($text, '/')));
                 break;
-//            case '/settings':
-//                $this->settingService->settingHandle();
-//                break;
+            case '/settings':
+                $this->bot->settingHandle();
+                break;
             case '/set_menu':
-                $this->telegramService->setMyCommands(CommandService::MENU_COMMANDS);
+                $this->bot->setMyCommands(CommandService::MENU_COMMANDS);
                 break;
             default:
-                $this->appService->sendMessage('🤨 Invalid Request!');
+                $this->bot->sendMessage('🤨 Invalid Request!');
         }
     }
 }

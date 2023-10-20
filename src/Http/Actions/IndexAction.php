@@ -3,43 +3,32 @@
 namespace LbilTech\TelegramGitNotifierApp\Http\Actions;
 
 use GuzzleHttp\Client;
+use LbilTech\TelegramGitNotifier\Bot;
 use LbilTech\TelegramGitNotifier\Exceptions\EntryNotFoundException;
 use LbilTech\TelegramGitNotifier\Exceptions\InvalidViewTemplateException;
 use LbilTech\TelegramGitNotifier\Exceptions\MessageIsEmptyException;
 use LbilTech\TelegramGitNotifier\Exceptions\SendNotificationException;
-use LbilTech\TelegramGitNotifier\Models\Event;
-use LbilTech\TelegramGitNotifier\Models\Setting;
-use LbilTech\TelegramGitNotifier\Services\TelegramService;
-use LbilTech\TelegramGitNotifierApp\Services\AppService;
+use LbilTech\TelegramGitNotifier\Notifier;
 use Symfony\Component\HttpFoundation\Request;
+use Telegram;
 
 class IndexAction
 {
-    protected AppService $appService;
+    protected Client $client;
 
-    protected TelegramService $telegramService;
+    protected Bot $bot;
+
+    protected Notifier $notifier;
 
     protected Request $request;
 
-    protected Client $client;
-
-    public Setting $setting;
-
-    public Event $event;
-
     public function __construct()
     {
-        $this->appService = new AppService();
-        $this->appService->setCurrentChatId();
-
-        $this->telegramService = new TelegramService($this->appService->telegram);
-
         $this->client = new Client();
-        $this->event = new Event();
 
-        $this->setting = new Setting();
-        $this->setting = $this->appService->setSettingFile($this->setting);
-        $this->setting->setSettingConfig();
+        $telegram = new Telegram(config('telegram-git-notifier.bot.token'));
+        $this->bot = new Bot($telegram);
+        $this->notifier = new Notifier();
     }
 
     /**
@@ -53,24 +42,19 @@ class IndexAction
      */
     public function __invoke(): void
     {
-        if ($this->telegramService->isCallback()) {
-            $settingAction = new SettingAction();
-            $settingAction();
+        if ($this->bot->isCallback()) {
+            $callbackAction = new CallbackAction($this->bot);
+            $callbackAction();
             return;
         }
 
-        if ($this->telegramService->isMessage()) {
-            $commandAction = new CommandAction($this->appService, $this->telegramService, $this->setting);
+        if ($this->bot->isMessage() && $this->bot->isOwner()) {
+            $commandAction = new CommandAction($this->bot);
             $commandAction();
             return;
         }
 
-        $sendNotificationAction = new SendNotificationAction(
-            $this->client,
-            $this->event,
-            $this->setting,
-            $this->appService
-        );
+        $sendNotificationAction = new SendNotificationAction($this->notifier, $this->bot->setting);
         $sendNotificationAction();
     }
 }
