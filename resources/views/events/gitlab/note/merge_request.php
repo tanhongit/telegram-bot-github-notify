@@ -9,6 +9,6 @@ $message .= "🛠 <b>{$payload->merge_request->title}</b> \n";
 
 $message .= "🌳 {$payload->merge_request->source_branch} -> {$payload->merge_request->target_branch} 🎯 \n";
 
-$message .= require_once __DIR__ . '/../../shared/partials/gitlab/_body.php';
+$message .= require __DIR__ . '/../../shared/partials/gitlab/_body.php';
 
 echo $message;

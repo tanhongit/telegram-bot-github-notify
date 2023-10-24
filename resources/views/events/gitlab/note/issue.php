@@ -7,6 +7,6 @@ $message = "💬 <b>New Comment on Issue</b> - 🦊<a href=\"{$payload->object_a
 
 $message .= "📢 <b>{$payload->issue->title}</b> \n\n";
 
-$message .= require_once __DIR__ . '/../../shared/partials/gitlab/_body.php';
+$message .= require __DIR__ . '/../../shared/partials/gitlab/_body.php';
 
 echo $message;

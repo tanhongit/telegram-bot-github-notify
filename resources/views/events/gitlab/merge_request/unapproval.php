@@ -9,10 +9,10 @@ $message .= "🛠 <b>{$payload->object_attributes->title}</b> \n\n";
 
 $message .= "🌳 {$payload->object_attributes->source_branch} -> {$payload->object_attributes->target_branch} 🎯 \n";
 
-$message .= require_once __DIR__ . '/../../shared/partials/gitlab/_assignees.php';
+$message .= require __DIR__ . '/../../shared/partials/gitlab/_assignees.php';
 
-$message .= require_once __DIR__ . '/partials/_reviewers.php';
+$message .= require __DIR__ . '/partials/_reviewers.php';
 
-$message .= require_once __DIR__ . '/../../shared/partials/gitlab/_body.php';
+$message .= require __DIR__ . '/../../shared/partials/gitlab/_body.php';
 
 echo $message;
