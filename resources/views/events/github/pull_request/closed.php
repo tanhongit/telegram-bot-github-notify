@@ -14,10 +14,10 @@ $message .= "🛠 <b>{$payload->pull_request->title}</b> \n\n";
 
 $message .= "🌳 {$payload->pull_request->head->ref} -> {$payload->pull_request->base->ref} 🎯 \n";
 
-$message .= require __DIR__ . '/../../shared/partials/github/_assignees.php';
+$message .= require_once __DIR__ . '/../../shared/partials/github/_assignees.php';
 
-$message .= require __DIR__ . '/partials/_reviewers.php';
+$message .= require_once __DIR__ . '/partials/_reviewers.php';
 
-$message .= require __DIR__ . '/../../shared/partials/github/_body.php';
+$message .= require_once __DIR__ . '/../../shared/partials/github/_body.php';
 
 echo $message;
