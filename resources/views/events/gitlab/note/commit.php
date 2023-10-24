@@ -9,6 +9,6 @@ $message .= "⚙️ <b>{$payload->commit->message}</b> \n\n";
 
 $message .= "🔗 View Comment: <a href=\"{$payload->object_attributes->url}\">{$payload->commit->id}</a> \n\n";
 
-$message .= require __DIR__ . '/../../shared/partials/gitlab/_body.php';
+$message .= require_once __DIR__ . '/../../shared/partials/gitlab/_body.php';
 
 echo $message;
