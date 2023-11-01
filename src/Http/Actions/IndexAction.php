@@ -45,12 +45,14 @@ class IndexAction
         if ($this->bot->isCallback()) {
             $callbackAction = new CallbackAction($this->bot);
             $callbackAction();
+
             return;
         }
 
         if ($this->bot->isMessage() && $this->bot->isOwner()) {
             $commandAction = new CommandAction($this->bot);
             $commandAction();
+
             return;
         }
 
