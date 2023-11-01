@@ -11,3 +11,6 @@ storage
 .docker
 *.log
 logs
+
+build
+.php-cs-fixer.cache

@@ -20,7 +20,7 @@
   "homepage": "https://github.com/lbiltech/telegram-git-notifier-app",
   "license": "MIT",
   "require": {
-    "php": "^8.0",
+    "php": "^8.1",
     "ext-json": "*",
     "lbiltech/telegram-git-notifier": "^1.2.0"
   },
